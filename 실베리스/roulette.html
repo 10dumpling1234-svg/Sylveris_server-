@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>실베리스 후원자 룰렛</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to bottom, #2b5876, #4e4376);
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    h1 { margin-bottom: 10px; }
+    .wheel {
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      border: 10px solid #fff;
+      position: relative;
+      overflow: hidden;
+      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .segment {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background: #ffcc00;
+      transform-origin: 100% 100%;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #ff9800;
+      color: #fff;
+    }
+    input {
+      margin: 10px;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎡 실베리스 후원자 룰렛</h1>
+
+  <!-- 닉네임 입력 -->
+  <input type="text" id="nickname" placeholder="닉네임을 입력하세요">
+
+  <!-- 룰렛 -->
+  <div class="wheel" id="wheel"></div>
+  <button onclick="spin()">뽑기!</button>
+
+  <!-- 결과 -->
+  <h2 id="result"></h2>
+
+  <script>
+    const prizes = [
+      "💵 50$",
+      "💵 100$",
+      "💵 500$",
+      "💎 다이아몬드 블록 ×1",
+      "⚒️ 네더라이트 주괴 ×1",
+      "🍀 랜덤 인챈트북 ×1",
+      "🎁 미스터리 박스",
+      "🙌 꽝"
+    ];
+
+    const wheel = document.getElementById("wheel");
+    const result = document.getElementById("result");
+
+    // 룰렛 칸 만들기
+    prizes.forEach((prize, i) => {
+      const seg = document.createElement("div");
+      seg.className = "segment";
+      seg.style.transform = `rotate(${(360 / prizes.length) * i}deg) skewY(-${90 - (360 / prizes.length)}deg)`;
+      seg.style.background = i % 2 === 0 ? "#ffcc00" : "#ff5722";
+      seg.innerHTML = `<span style="transform: skewY(${90 - (360 / prizes.length)}deg) rotate(${(360 / prizes.length) / 2}deg);">${prize}</span>`;
+      wheel.appendChild(seg);
+    });
+
+    let spinning = false;
+
+    function spin() {
+      const nickname = document.getElementById("nickname").value.trim();
+      if (!nickname) {
+        alert("닉네임을 입력하세요!");
+        return;
+      }
+
+      if (spinning) return;
+      spinning = true;
+
+      const spins = 5 + Math.floor(Math.random() * 5); // 몇 바퀴 돌지
+      const prizeIndex = Math.floor(Math.random() * prizes.length);
+      const angle = 360 * spins - (360 / prizes.length) * prizeIndex;
+      wheel.style.transform = `rotate(${angle}deg)`;
+
+      setTimeout(() => {
+        result.textContent = `🎉 ${nickname}님의 결과: ${prizes[prizeIndex]}`;
+        spinning = false;
+
+        // ✅ 서버 운영자가 볼 수 있도록 콘솔에도 찍히게
+        console.log(`닉네임: ${nickname}, 결과: ${prizes[prizeIndex]}`);
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
